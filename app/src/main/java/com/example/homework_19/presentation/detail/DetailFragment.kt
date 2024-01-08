@@ -9,8 +9,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.bumptech.glide.Glide
 import com.example.homework_19.data.common.Resource
 import com.example.homework_19.databinding.FragmentDetailBinding
-import com.example.homework_19.domain.model.UserEntity
 import com.example.homework_19.presentation.common.BaseFragment
+import com.example.homework_19.presentation.model.User
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -49,10 +49,10 @@ class DetailFragment : BaseFragment<FragmentDetailBinding>(FragmentDetailBinding
         }
     }
 
-    private fun showUserDetail(userDetail: UserEntity) {
+    private fun showUserDetail(userDetail: User) {
         binding.apply {
             tvId.text = "User ID: ${userDetail.id}"
-            tvFullName.text = "${userDetail.firstName} ${userDetail.lastName}"
+            tvFullName.text = "${userDetail.fullName}"
             tvEmail.text = userDetail.email
             Glide.with(binding.avatar.context)
                 .load(userDetail.avatar)

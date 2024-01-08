@@ -3,8 +3,8 @@ package com.example.homework_19.presentation.list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.homework_19.data.common.Resource
-import com.example.homework_19.domain.model.UserEntity
 import com.example.homework_19.domain.usecase.GetUserListUseCase
+import com.example.homework_19.presentation.mapper.toPresentation
 import com.example.homework_19.presentation.model.User
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,22 +26,11 @@ class UserListViewModel @Inject constructor(private val getUserListUseCase: GetU
         viewModelScope.launch {
             getUserListUseCase.execute().collect { userListResource ->
                 _userListState.value = when (userListResource) {
-                    is Resource.Success -> Resource.Success(mapToPresentation(userListResource.data))
+                    is Resource.Success -> Resource.Success(userListResource.data.map { it.toPresentation() })
                     is Resource.Error -> userListResource
                     is Resource.Loading -> userListResource
                 }
             }
-        }
-    }
-
-    private fun mapToPresentation(userList: List<UserEntity>): List<User> {
-        return userList.map { userEntity ->
-            User(
-                id = userEntity.id,
-                fullName = "${userEntity.firstName} ${userEntity.lastName}",
-                email = userEntity.email,
-                avatar = userEntity.avatar
-            )
         }
     }
 
