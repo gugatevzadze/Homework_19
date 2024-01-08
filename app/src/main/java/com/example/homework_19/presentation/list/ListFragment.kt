@@ -1,5 +1,6 @@
 package com.example.homework_19.presentation.list
 
+import android.os.Bundle
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
@@ -24,19 +25,29 @@ class ListFragment : BaseFragment<FragmentListBinding>(FragmentListBinding::infl
     override fun setUp() {
         initRecyclerView()
         viewModel.fetchUserList()
+        setListeners()
+    }
+
+    private fun initRecyclerView() {
+        userListAdapter = ListRecyclerAdapter(
+            onItemClick = { userId -> viewModel.onUserItemClick(userId) },
+            onItemLongClick = { position -> userListAdapter.toggleItemSelection(position) }
+        )
+        binding.recyclerView.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = userListAdapter
+        }
+    }
+
+    private fun setListeners() {
+        binding.btnDelete.setOnClickListener {
+            viewModel.deleteSelectedItems()
+        }
     }
 
     override fun bindObservers() {
         observeUserList()
         observeNavigationEvents()
-    }
-
-    private fun initRecyclerView() {
-        userListAdapter = ListRecyclerAdapter { userId -> viewModel.onUserItemClick(userId) }
-        binding.recyclerView.apply {
-            layoutManager = LinearLayoutManager(context)
-            adapter = userListAdapter
-        }
     }
 
     private fun observeUserList() {
@@ -62,6 +73,7 @@ class ListFragment : BaseFragment<FragmentListBinding>(FragmentListBinding::infl
             }
         }
     }
+
     private fun showUserList(userList: List<User>) {
         userListAdapter.submitList(userList)
     }
@@ -73,10 +85,12 @@ class ListFragment : BaseFragment<FragmentListBinding>(FragmentListBinding::infl
     private fun showLoading(loading: Boolean) {
         binding.progressBar.isVisible = loading
     }
+
     private fun handleNavigationEvent(navigationEvent: UserListNavigation?) {
         when (navigationEvent) {
             is UserListNavigation.NavigateToDetail -> navigateToUserDetail(navigationEvent.userId)
-            else -> {}
+            else -> {
+            }
         }
         viewModel.onNavigationHandled()
     }
@@ -86,4 +100,7 @@ class ListFragment : BaseFragment<FragmentListBinding>(FragmentListBinding::infl
         findNavController().navigate(action)
     }
 }
+
+
+
 

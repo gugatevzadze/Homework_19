@@ -41,7 +41,32 @@ class UserListViewModel @Inject constructor(private val getUserListUseCase: GetU
     fun onNavigationHandled() {
         _navigationEvent.value = null
     }
+
+    // Function to delete selected items
+    fun deleteSelectedItems() {
+        viewModelScope.launch {
+            val currentState = userListState.value
+            if (currentState is Resource.Success) {
+                val selectedItems = currentState.data.filter { it.isSelected }
+                if (selectedItems.isNotEmpty()) {
+                    // Perform local deletion logic
+                    val updatedList = currentState.data.filterNot { it.isSelected }.toMutableList()
+
+                    // If you want to perform any additional logic, such as updating UI or saving to a local database, do it here
+
+                    // Notify the UI about the changes
+                    _userListState.value = Resource.Success(updatedList)
+
+                    // If you want to refresh the list after deletion, you can call fetchUserList()
+                    // However, keep in mind that this depends on how your data source works
+//                     fetchUserList()
+                }
+            }
+        }
+    }
+
 }
+
 sealed class UserListNavigation {
     data class NavigateToDetail(val userId: Int) : UserListNavigation()
 }
