@@ -1,6 +1,6 @@
 package com.example.homework_19.domain.model
 
-data class UserDetail(
+data class UserEntity(
     val id: Int,
     val email: String,
     val firstName: String,

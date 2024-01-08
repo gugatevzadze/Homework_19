@@ -1,68 +1,89 @@
 package com.example.homework_19.presentation.list
 
-import android.util.Log.d
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.homework_19.data.common.Resource
 import com.example.homework_19.databinding.FragmentListBinding
-import com.example.homework_19.domain.model.UserList
 import com.example.homework_19.presentation.common.BaseFragment
+import com.example.homework_19.presentation.model.User
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class ListFragment : BaseFragment<FragmentListBinding>(FragmentListBinding::inflate),
-    OnItemClickListener {
+class ListFragment : BaseFragment<FragmentListBinding>(FragmentListBinding::inflate) {
 
-    private val viewModel: ListViewModel by viewModels()
-    private lateinit var listRecyclerAdapter: ListRecyclerAdapter
+    private val viewModel: UserListViewModel by viewModels()
+    private lateinit var userListAdapter: ListRecyclerAdapter
 
     override fun setUp() {
-        setupRecyclerView()
-    }
-
-    override fun onClickListeners() {
+        initRecyclerView()
+        viewModel.fetchUserList()
     }
 
     override fun bindObservers() {
-        observeViewModel()
+        observeUserList()
+        observeNavigationEvents()
     }
 
-    override fun onItemClick(user: UserList) {
-        // Handle item click here, e.g., navigate to details fragment
-//        viewModel.navigateToUserDetail(user.id)
-    }
-
-    private fun setupRecyclerView() {
-        listRecyclerAdapter = ListRecyclerAdapter(this)
-        binding.listRecyclerView.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            adapter = listRecyclerAdapter
+    private fun initRecyclerView() {
+        userListAdapter = ListRecyclerAdapter { userId -> viewModel.onUserItemClick(userId) }
+        binding.recyclerView.apply {
+            layoutManager = LinearLayoutManager(context)
+            adapter = userListAdapter
         }
     }
 
-    private fun observeViewModel() {
+    private fun observeUserList() {
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.userList.collect {
-                    d("ListFragment", "userList observed: $it")
-                    when (it) {
-                        is Resource.Loading -> {
-                        }
-
-                        is Resource.Success -> {
-                            listRecyclerAdapter.submitList(it.data)
-                        }
-
-                        is Resource.Error -> {
-                        }
+                viewModel.userListState.collect { userListResource ->
+                    when (userListResource) {
+                        is Resource.Success -> showUserList(userListResource.data)
+                        is Resource.Error -> showError(userListResource.errorMessage)
+                        is Resource.Loading -> showLoading(userListResource.loading)
                     }
                 }
             }
         }
     }
+
+    private fun observeNavigationEvents() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.navigationEvent.collect { navigationEvent ->
+                    handleNavigationEvent(navigationEvent)
+                }
+            }
+        }
+    }
+    private fun showUserList(userList: List<User>) {
+        userListAdapter.submitList(userList)
+    }
+
+    private fun showError(errorMessage: String) {
+        Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show()
+    }
+
+    private fun showLoading(loading: Boolean) {
+        binding.progressBar.isVisible = loading
+    }
+    private fun handleNavigationEvent(navigationEvent: UserListNavigation?) {
+        when (navigationEvent) {
+            is UserListNavigation.NavigateToDetail -> navigateToUserDetail(navigationEvent.userId)
+            else -> {}
+        }
+        viewModel.onNavigationHandled()
+    }
+
+    private fun navigateToUserDetail(userId: Int) {
+        val action = ListFragmentDirections.actionListFragmentToDetailFragment(userId)
+        findNavController().navigate(action)
+    }
 }
+

@@ -8,10 +8,10 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.homework_19.databinding.ListItemBinding
-import com.example.homework_19.domain.model.UserList
+import com.example.homework_19.presentation.model.User
 
-class ListRecyclerAdapter(private val itemClickListener: OnItemClickListener) :
-    ListAdapter<UserList, ListRecyclerAdapter.UserListViewHolder>(UserListDiffCallback()) {
+class ListRecyclerAdapter(private val onItemClick: (Int) -> Unit) :
+    ListAdapter<User, ListRecyclerAdapter.UserListViewHolder>(UserListDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserListViewHolder {
         val binding =
@@ -28,34 +28,27 @@ class ListRecyclerAdapter(private val itemClickListener: OnItemClickListener) :
     inner class UserListViewHolder(private val binding: ListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        init {
-            binding.root.setOnClickListener {
-                val position = adapterPosition
-                if (position != RecyclerView.NO_POSITION) {
-                    val user = getItem(position)
-                    itemClickListener.onItemClick(user)
-                }
-            }
-        }
-
-        fun bind(user: UserList) {
+        fun bind(user: User) {
             binding.apply {
-                tvFirstName.text = user.firstName
-                tvLastName.text = user.lastName
+                tvFullName.text = user.fullName
                 tvEmail.text = user.email
                 Glide.with(binding.avatar.context)
                     .load(user.avatar)
                     .into(binding.avatar)
             }
+            itemView.setOnClickListener {
+                d("UserListAdapter", "Item clicked. User ID: ${user.id}")
+                onItemClick.invoke(user.id)
+            }
         }
     }
 
-    private class UserListDiffCallback : DiffUtil.ItemCallback<UserList>() {
-        override fun areItemsTheSame(oldItem: UserList, newItem: UserList): Boolean {
+    private class UserListDiffCallback : DiffUtil.ItemCallback<User>() {
+        override fun areItemsTheSame(oldItem: User, newItem: User): Boolean {
             return oldItem.id == newItem.id
         }
 
-        override fun areContentsTheSame(oldItem: UserList, newItem: UserList): Boolean {
+        override fun areContentsTheSame(oldItem: User, newItem: User): Boolean {
             return oldItem == newItem
         }
     }

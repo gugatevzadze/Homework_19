@@ -28,11 +28,3 @@ object UseCaseModule {
         return GetUserDetailUseCaseImpl(userDetailRepository)
     }
 }
-
-//interface UseCaseModule {
-//    @Binds
-//    fun bindGetUserListUseCase(impl: GetUserListUseCaseImpl): GetUserListUseCase
-//
-//    @Binds
-//    fun bindGetUserDetailUseCase(impl: GetUserDetailUseCaseImpl): GetUserDetailUseCase
-//}

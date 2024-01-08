@@ -1,10 +1,10 @@
 package com.example.homework_19.data.mapper
 
-import com.example.homework_19.data.model.UserListDto
-import com.example.homework_19.domain.model.UserList
+import com.example.homework_19.data.model.UserDto
+import com.example.homework_19.domain.model.UserEntity
 
-fun UserListDto.toDomain(): UserList {
-    return UserList(
+fun UserDto.toDomain(): UserEntity {
+    return UserEntity(
         id = id,
         email = email,
         firstName = firstName,
