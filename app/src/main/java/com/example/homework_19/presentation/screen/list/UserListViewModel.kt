@@ -3,6 +3,7 @@ package com.example.homework_19.presentation.screen.list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.homework_19.data.common.Resource
+import com.example.homework_19.domain.usecase.DeleteUserUseCase
 import com.example.homework_19.domain.usecase.GetUserListUseCase
 import com.example.homework_19.presentation.event.list.UserListEvent
 import com.example.homework_19.presentation.mapper.toPresentation
@@ -17,7 +18,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class UserListViewModel @Inject constructor(private val getUserListUseCase: GetUserListUseCase) :
+class UserListViewModel @Inject constructor(
+    private val getUserListUseCase: GetUserListUseCase,
+    private val deleteUserListUseCase: DeleteUserUseCase
+) :
     ViewModel() {
 
     private val _userUserListState = MutableStateFlow(UserListState())
@@ -33,8 +37,10 @@ class UserListViewModel @Inject constructor(private val getUserListUseCase: GetU
             is UserListEvent.UserItemSelect -> onUserItemSelect(event.user)
             is UserListEvent.UserItemDeselect -> onUserItemDeselect(event.user)
             is UserListEvent.UserItemDelete -> onUserItemDelete()
+//            is UserListEvent.UserItemDelete -> deleteUser(event.userId)
         }
     }
+
     private fun getUserList() {
         viewModelScope.launch {
             getUserListUseCase.invoke().collect { it ->
@@ -46,27 +52,39 @@ class UserListViewModel @Inject constructor(private val getUserListUseCase: GetU
                             )
                         }
                     }
+
                     is Resource.Error -> {
                         _userUserListState.update { currentState ->
                             currentState.copy(
                                 errorMessage = it.errorMessage
-                            ) }
+                            )
+                        }
                     }
+
                     is Resource.Loading -> {
                         _userUserListState.update { currentState ->
                             currentState.copy(
                                 isLoading = it.loading
-                            ) }
+                            )
+                        }
                     }
                 }
             }
         }
     }
+
+    private fun deleteUser(userId: Int) {
+        viewModelScope.launch {
+            deleteUserListUseCase.invoke(userId)
+        }
+    }
+
     private fun onUserItemClick(user: User) {
         viewModelScope.launch {
             _navigationEvent.emit(UserListNavigation.NavigateToDetail(user.id))
         }
     }
+
     private fun onUserItemSelect(user: User) {
         viewModelScope.launch {
             _userUserListState.update { currentState ->
@@ -82,6 +100,7 @@ class UserListViewModel @Inject constructor(private val getUserListUseCase: GetU
             }
         }
     }
+
     private fun onUserItemDeselect(user: User) {
         viewModelScope.launch {
             _userUserListState.update { currentState ->
@@ -97,6 +116,7 @@ class UserListViewModel @Inject constructor(private val getUserListUseCase: GetU
             }
         }
     }
+
     private fun onUserItemDelete() {
         viewModelScope.launch {
             _userUserListState.update { currentState ->
@@ -106,6 +126,7 @@ class UserListViewModel @Inject constructor(private val getUserListUseCase: GetU
             }
         }
     }
+
     sealed interface UserListNavigation {
         data class NavigateToDetail(val userId: Int) : UserListNavigation
     }

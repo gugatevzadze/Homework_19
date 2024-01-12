@@ -9,5 +9,5 @@ interface UserRepository {
 
     suspend fun getUserDetail(userId: Int): Flow<Resource<UserEntity>>
 
-//    suspend fun deleteUser(userId: Int): Flow<Resource<UserEntity>>
+    suspend fun deleteUser(userId: Int): Flow<Resource<UserEntity>>
 }

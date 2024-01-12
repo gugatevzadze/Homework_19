@@ -1,8 +1,10 @@
 package com.example.homework_19.di
 
 import com.example.homework_19.domain.repository.UserRepository
+import com.example.homework_19.domain.usecase.DeleteUserUseCase
 import com.example.homework_19.domain.usecase.GetUserDetailUseCase
 import com.example.homework_19.domain.usecase.GetUserListUseCase
+import com.example.homework_19.domain.usecaseimpl.DeleteUserUseCaseImpl
 import com.example.homework_19.domain.usecaseimpl.GetUserDetailUseCaseImpl
 import com.example.homework_19.domain.usecaseimpl.GetUserListUseCaseImpl
 import dagger.Module
@@ -27,9 +29,9 @@ object UseCaseModule {
         return GetUserDetailUseCaseImpl(userRepository)
     }
 
-//    @Singleton
-//    @Provides
-//    fun provideDeleteUserUseCase(userRepository: UserRepository): DeleteUserUseCase {
-//        return DeleteUserUseCaseImpl(userRepository)
-//    }
+    @Singleton
+    @Provides
+    fun provideDeleteUserUseCase(userRepository: UserRepository): DeleteUserUseCase {
+        return DeleteUserUseCaseImpl(userRepository)
+    }
 }

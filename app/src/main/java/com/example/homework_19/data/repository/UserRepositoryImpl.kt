@@ -34,4 +34,11 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun deleteUser(userId: Int): Flow<Resource<UserEntity>> {
+        return responseHandler.safeApiCall {
+            userDetailService.deleteUser(userId)
+        }.mapToDomain { userDetailResponseDto ->
+            userDetailResponseDto.data.toDomain()
+        }
+    }
 }

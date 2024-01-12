@@ -14,6 +14,6 @@ interface UserApiService {
     @GET("/v3/7ec14eae-06bf-4f6d-86d2-ac1b9df5fe3d")
     suspend fun getUserList(): Response<List<UserDto>>
 
-//    @DELETE("/api/users/{id}")
-//    suspend fun deleteUser(@Path("id") id: Int): Response<UserDetailResponseDto>
+    @DELETE("/api/users/{id}")
+    suspend fun deleteUser(@Path("id") id: Int): Response<UserDetailResponseDto>
 }
