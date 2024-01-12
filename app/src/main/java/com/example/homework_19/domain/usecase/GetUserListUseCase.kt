@@ -5,5 +5,5 @@ import com.example.homework_19.domain.model.UserEntity
 import kotlinx.coroutines.flow.Flow
 
 interface GetUserListUseCase {
-    suspend fun execute(): Flow<Resource<List<UserEntity>>>
+    suspend operator fun invoke(): Flow<Resource<List<UserEntity>>>
 }

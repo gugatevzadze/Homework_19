@@ -1,8 +1,7 @@
 package com.example.homework_19.di
 
 import com.example.homework_19.data.common.ResponseHandler
-import com.example.homework_19.data.service.UserDetailService
-import com.example.homework_19.data.service.UserListService
+import com.example.homework_19.data.service.UserApiService
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
@@ -28,7 +27,7 @@ object AppModule {
 
     @Singleton
     @Provides
-    @Named("ListRetrofit")
+    @Named("MockyRetrofit")
     fun provideListRetrofitClient(): Retrofit {
         return Retrofit.Builder()
             .baseUrl(BASE_URL_LIST)
@@ -44,7 +43,7 @@ object AppModule {
 
     @Singleton
     @Provides
-    @Named("DetailRetrofit")
+    @Named("ReqresRetrofit")
     fun provideDetailRetrofitClient(): Retrofit {
         return Retrofit.Builder()
             .baseUrl(BASE_URL_DETAIL)
@@ -57,20 +56,19 @@ object AppModule {
             )
             .build()
     }
-
     @Singleton
     @Provides
-    fun provideUserListService(
-        @Named("ListRetrofit") listRetrofit: Retrofit
-    ): UserListService {
-        return listRetrofit.create(UserListService::class.java)
+    @Named("MockyService")
+    fun provideUserListService(@Named("MockyRetrofit")listRetrofit: Retrofit
+    ): UserApiService {
+        return listRetrofit.create(UserApiService::class.java)
     }
 
     @Singleton
     @Provides
-    fun provideUserDetailService(
-        @Named("DetailRetrofit") detailRetrofit: Retrofit
-    ): UserDetailService {
-        return detailRetrofit.create(UserDetailService::class.java)
+    @Named("ReqresService")
+    fun provideUserDetailService(@Named("ReqresRetrofit")detailRetrofit: Retrofit
+    ): UserApiService {
+        return detailRetrofit.create(UserApiService::class.java)
     }
 }

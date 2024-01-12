@@ -6,5 +6,5 @@ import kotlinx.coroutines.flow.Flow
 
 
 interface GetUserDetailUseCase {
-    suspend fun execute(userId: Int): Flow<Resource<UserEntity>>
+    suspend operator fun invoke(userId: Int): Flow<Resource<UserEntity>>
 }

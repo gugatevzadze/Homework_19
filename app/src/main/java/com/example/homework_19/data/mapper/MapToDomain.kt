@@ -1,9 +1,10 @@
-package com.example.homework_19.data.common
+package com.example.homework_19.data.mapper
 
+import com.example.homework_19.data.common.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
-fun <T, DomainType> Flow<Resource<T>>.mapToDomain(mapper: (T) -> DomainType): Flow<Resource<DomainType>> {
+fun <T:Any, DomainType> Flow<Resource<T>>.mapToDomain(mapper: (T) -> DomainType): Flow<Resource<DomainType>> {
     return this.map { resource ->
         when (resource) {
             is Resource.Success -> Resource.Success(mapper(resource.data))

@@ -5,5 +5,5 @@ data class User(
     val fullName: String,
     val email: String,
     val avatar: String,
-    var isSelected: Boolean = false // Add selected property
+    var isSelected: Boolean = false
 )

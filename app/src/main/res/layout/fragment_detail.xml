@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:padding="30dp"
-    tools:context=".presentation.detail.DetailFragment">
+    tools:context=".presentation.screen.detail.DetailFragment">
 
     <ProgressBar
         android:id="@+id/progressBar"
